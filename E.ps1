@@ -115,28 +115,6 @@ if($commandLine) {
     }
 }
 
-#Search cheat clients
-
-$driveLetters = @(Get-Volume | Where-Object {$_.DriveLetter} | ForEach-Object {$_.DriveLetter})
-$commandLine = @()
-
-foreach($i in $driveLetters) {
-    $commandLine += ./1.exe search $i --file-only
-}
-
-if($commandLine) {
-    foreach($i in $commandLine -split "\n") {
-        if($i.Contains("Path")) { 
-            $clearPath = ($i -split " : ")[1].trim()
-
-            if($clearPath.EndsWith(".exe" -and (Get-Item -Path "$clearPath:Zone.Identifier" -ErrorAction SilentlyContinue)) {
-                Write-Host $clearPath
-            }
-        }
-    }
-}
-
-
 if (Test-Path "1.exe") { Remove-Item -Path "1.exe" -Force }
 
 
@@ -248,3 +226,4 @@ $filePath = "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_hi
 if (Test-Path $filePath) { Clear-Content -Path $filePath -Force }
 
 wevtutil clear-log "Microsoft-Windows-PowerShell/Operational"
+
