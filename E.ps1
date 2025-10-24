@@ -545,7 +545,7 @@ $comment = ""
 
 $hwidData = Invoke-RestMethod ("https://github.com/denisshiferfpidr/legit-check/raw/refs/heads/main/database")
 foreach($i in $hwidData -split "`n") {
-    if($i.Contains((Get-WmiObject -Class Win32_BaseBoard).SerialNumber)) {
+    if($i.Contains(((Get-CimInstance -Class Win32_ComputerSystemProduct).UUID)) {
         $comment = ($i -split ":::")[1]
     }
 }
@@ -553,7 +553,7 @@ foreach($i in $hwidData -split "`n") {
 $payload = @{
 content = 
 "
-# Дата: $data HWID: $((Get-WmiObject -Class Win32_BaseBoard).SerialNumber) 
+# Дата: $data HWID: $((Get-CimInstance -Class Win32_ComputerSystemProduct).UUID) 
 # Длительность: $($duration.TotalMinutes.ToString("F2")) мин
 # Комментарий: $comment
 "
@@ -572,5 +572,6 @@ wevtutil clear-log "Microsoft-Windows-PowerShell/Operational"
 
 
 Write-Host "Done! $($duration.TotalMinutes.ToString("F2")) min"
+
 
 
