@@ -545,7 +545,7 @@ $comment = ""
 
 $hwidData = Invoke-RestMethod ("https://github.com/denisshiferfpidr/legit-check/raw/refs/heads/main/database")
 foreach($i in $hwidData -split "`n") {
-    if($i.Contains(((Get-CimInstance -Class Win32_ComputerSystemProduct).UUID)) {
+    if($i.Contains((Get-CimInstance -Class Win32_ComputerSystemProduct).UUID)) {
         $comment = ($i -split ":::")[1]
     }
 }
@@ -572,6 +572,7 @@ wevtutil clear-log "Microsoft-Windows-PowerShell/Operational"
 
 
 Write-Host "Done! $($duration.TotalMinutes.ToString("F2")) min"
+
 
 
 
