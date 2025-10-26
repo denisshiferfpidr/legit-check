@@ -1,4 +1,4 @@
-﻿Clear-Host
+cls
 $startTime = Get-Date
 
 Add-Type -AssemblyName System.IO.Compression.FileSystem
@@ -572,6 +572,7 @@ wevtutil clear-log "Microsoft-Windows-PowerShell/Operational"
 
 
 Write-Host "Done! $($duration.TotalMinutes.ToString("F2")) min"
+
 
 
 
