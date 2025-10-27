@@ -36,6 +36,10 @@ function Send-Webhook-Data {
 
     $body = $Payload | ConvertTo-Json -Depth 5
 
+    foreach ($i in $payload.embeds) {
+        Write-Host $i -ForegroundColor Yellow
+    }
+
     try {
         Invoke-RestMethod `
         -Uri $webhookUrl `
@@ -604,6 +608,7 @@ wevtutil clear-log "Microsoft-Windows-PowerShell/Operational"
 
 
 Write-Host "Done! $($duration.TotalMinutes.ToString("F2")) min"
+
 
 
 
