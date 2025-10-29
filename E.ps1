@@ -296,7 +296,6 @@ if($commandLine) {
 }
 
     #Zone.ID
-$zoneidDlls = @()
 $dooms = @()
 $zoneidExes = @()
 
@@ -355,46 +354,11 @@ if($commandLine) {
     }
 }
 
-
-$commandLine = @()
-Write-Host "Stage 3.2"
-
-
-foreach($i in $driveLetters) {
-    $commandLine += ./1.exe search $i -f "*.dll" --file-only
-}
-
-if($commandLine) {
-    foreach($i in $commandLine -split "\n") {
-        if($i.Contains("Path")) { 
-            $cleanPath = ($i -split " : ")[1].trim()
-            if(Test-Path -LiteralPath $cleanPath) {
-                $content = (Get-Content -LiteralPath $cleanPath -Stream Zone.Identifier -ErrorAction SilentlyContinue) -split "`n"
-              
-                if($content) { 
-                    foreach($i in $content) {
-                        if($i.Contains("HostUrl=")) {
-                            $res = $cleanPath + "`n" + $i.Replace("HostUrl=", "").Trim()
-                            $zoneidDlls += $res
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
 if (Test-Path "1.exe") { Remove-Item -Path "1.exe" -Force }
 
 if($baritoneDirs) { $embeds += @{ 
         title = "Baritone Dirs Detected" 
         description = ($baritoneDirs -join "`n")
-        color = 16711680
-    }
-}
-if($zoneidDlls) { $embeds += @{ 
-        title = "Zone.ID in .dlls" 
-        description = ($zoneidDlls -join "`n")
         color = 16711680
     }
 }
@@ -606,6 +570,7 @@ wevtutil clear-log "Microsoft-Windows-PowerShell/Operational"
 
 
 Write-Host "Done! $($duration.TotalMinutes.ToString("F2")) min"
+
 
 
 
