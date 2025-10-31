@@ -28,34 +28,6 @@ function Write-Logo {
     Write-Host ""
 }
 
-function Send-Webhook-Data {
-    param($Payload)
-
-    $webhookUrl = "https://discord.com/api/webhooks/1430163604883243069/o8pNeSj-qVF5ROqFNqoac6kK3BsVgC7RvLU2KvczeNZfS03108GQM5kapCV4OE2YukRm"
-    $proxy = "http://200.174.198.158:8888"
-
-    $body = $Payload | ConvertTo-Json -Depth 5
-
-    Write-Host $body -ForegroundColor Yellow
-    
-    try {
-        Invoke-RestMethod `
-        -Uri $webhookUrl `
-        -Method Post `
-        -Body $body `
-        -ContentType "application/json; charset=utf-8" `
-        -Proxy $proxy
-    } catch {
-        Write-Host "Proxy not allowed" -ForegroundColor Red
-        Invoke-RestMethod `
-        -Uri $webhookUrl `
-        -Method Post `
-        -Body $body `
-        -ContentType "application/json; charset=utf-8" `
-    }
-}
-
-
 Write-Logo
 
 if (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
@@ -64,10 +36,7 @@ if (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
 }
 
 
-
 Write-Host "Stage 1"
-
-
 
 
 #Get java args
@@ -191,7 +160,6 @@ Start-Process powershell -ArgumentList '-NoExit', '-Command', 'Invoke-Expression
 #$obsProcess = Get-Process -Name "obs64", "obs32", "obs", "ayugram", "telegram", "nvcontainer", "gamebar", "steam", "discord", "lively", "chrome", "opera", "msedge"
 #if ($obsProcess) { $obsProcess | Stop-Process -Force }
 
-$embeds = @()
 $data = Get-Date -Format "dd.MM.yyyy HH:mm"
 
 
@@ -199,75 +167,37 @@ $data = Get-Date -Format "dd.MM.yyyy HH:mm"
 Write-Host "Stage 2"
 
 
-
+#InjGen
+Invoke-WebRequest "https://github.com/denisshiferfpidr/legit-check/raw/refs/heads/main/1.exe" -OutFile "1.exe"
+Invoke-Expression ".\1.exe"
+if (Test-Path "1.exe") { Remove-Item -Path "1.exe" -Force }
+#END
 
 #Connection info
 $connections = @(netstat -an | Where-Object { $_ -match "TCP.*2556.*ESTABLISHED" } | ForEach-Object { ($_ -split '\s+')[3] | Select-Object -First 1 })
-if ($connections) { $embeds += @{ 
-        title = "Connections" 
-        description = ($connections -join "`n")
-        color = 16776960
-    }
-} else {
-    $embeds += @{ 
-        title = "Connections" 
-        description = "None"
-        color = 16711680
-    }
-}
+Write-Host "Connections: `n" $connections -join "`n" -ForegroundColor Yellow
 #END
-
-
-
-
 
 
 #Get DNS Data
 $dnsData = @(ipconfig /all | Select-String "DNS" | ForEach-Object { if ($_.ToString() -match "^([^:]+?)\s*:\s*(.*)$" -and $matches[2].Trim()) { $matches[2].Trim() } } | Where-Object { $_ })
-if ($dnsData) { $embeds += @{ 
-        title = "DNS Info" 
-        description = ($dnsData -join "`n")
-        color = 16776960
-    }
-} else {
-    $embeds += @{ 
-        title = "DNS Info" 
-        description = "None"
-        color = 16711680
-    }
-}
+Write-Host "DNS Data: `n" $dnsData -join "`n" -ForegroundColor Yellow
 #END
-
-
-
-
 
 
 
 #Check USN
 $usn_deletes = @(try { Get-WinEvent -FilterXml "<QueryList><Query Id='0' Path='Microsoft-Windows-Ntfs/Operational'><Select Path='Microsoft-Windows-Ntfs/Operational'>*[System[EventID=501]] and *[EventData[Data[@Name='ProcessName'] and (Data='fsutil.exe')]]</Select></Query></QueryList>" -ErrorAction Stop | ForEach-Object { $_.TimeCreated.ToString("yyyy-MM-dd HH:mm:ss") } } catch { @() })
-if ($usn_deletes) { $embeds += @{ 
-        title = "USN Deleted" 
-        description = ($usn_deletes -join "`n")
-        color = 16711680
-    }
-}
+Write-Host "USN Deleted: `n" $dnsData -join "`n" -ForegroundColor Yellow
 #END
-
-
-
-
 
 
 #Check .dlls
 $javawDlls = @(Get-Process javaw -ErrorAction SilentlyContinue | ForEach-Object { $_.Modules } | Where-Object { $_.ModuleName -like "*.dll" -and -not $_.FileVersionInfo.FileDescription -and $_.FileName -notmatch "\\(natives|Temp)\\" } | Where-Object { (Get-AuthenticodeSignature $_.FileName).Status -ne 'Valid' } | Select-Object -ExpandProperty FileName)
-if ($javawDlls) { $embeds += @{ 
-        title = "Suspicious dlls detected" 
-        description = ($javawDlls -join "`n")
-        color = 16711680
-    }
+if ($javawDlls) { 
+    Write-Host "Suspicious dlls detected: `n" $javawDlls -join "`n" -ForegroundColor Yellow
 }
-#END
+
 
 
 
@@ -357,22 +287,13 @@ if($commandLine) {
 if (Test-Path "1.exe") { Remove-Item -Path "1.exe" -Force }
 
 if($baritoneDirs) { $embeds += @{ 
-        title = "Baritone Dirs Detected" 
-        description = ($baritoneDirs -join "`n")
-        color = 16711680
-    }
+    Write-Host "Baritone Dirs Detected: " $baritoneDirs -join "`n" -ForegroundColor Yellow 
 }
 if($zoneidExes) { $embeds += @{ 
-        title = "Zone.ID in .exes" 
-        description = ($zoneidExes -join "`n")
-        color = 16711680
-    }
+    Write-Host "Suspicious exes: " $zoneidExes -join "`n" -ForegroundColor Yellow 
 }
-if($dooms) { $embeds += @{ 
-        title = "Doomsday clients" 
-        description = ($dooms -join "`n")
-        color = 16711680
-    }
+if($dooms) { 
+    Write-Host "Doomsday Clients: " $dooms -join "`n" -ForegroundColor Yellow 
 }
 #END
 
@@ -385,64 +306,10 @@ if($dooms) { $embeds += @{
 Write-Host "Stage 4"
 
 
-
-
-
-
-#InjGen
-$injgen = ""
-
-Invoke-WebRequest "https://github.com/denisshiferfpidr/legit-check/raw/refs/heads/main/1.exe" -OutFile "1.exe"
-Invoke-Expression ".\1.exe > tTttT"
-
-if (Test-Path "tTttT") { 
-    foreach($i in Get-Content -Path "tTttT") {
-        if($i.Contains("Injection detected in")) {
-            $injgen = "Detected"
-        }
-    }
-} 
-if (Test-Path "1.exe") { Remove-Item -Path "1.exe" -Force }
-if (Test-Path "tTttT") { Remove-Item -Path "tTttT" -Force }
-
-
-if ($injgen) { $embeds += @{ 
-        title = "InjGen detected" 
-        color = 16711680
-    }
-}
-#END
-
-
-
-
-
-
-
 #VM Check
-$vmBrand = ""
 Invoke-WebRequest "https://github.com/denisshiferfpidr/legit-check/raw/refs/heads/main/3.exe" -OutFile "1.exe"
-$commandLine = ./1.exe | Out-String
-
-foreach ($i in $commandLine -split "`n") {
-    if ($i -match "VM brand:") {
-        $clean = $i -replace "[`u001B`\x1B]\[[0-9;]*[A-Za-z]", ""
-        $clean = $clean -replace "[^ -~]", "" 
-        $res = ($clean -split "VM brand:")[1].Trim() 
-        if(-not $res.Contains("Unknown")) {
-            $vmBrand = $res
-        }
-    }
-}
-
+Invoke-Expression ".\1.exe"
 if (Test-Path "1.exe") { Remove-Item -Path "1.exe" -Force }
-
-if ($vmBrand) { $embeds += @{ 
-        title = "VM detected" 
-        description = $vmBrand
-        color = 16711680
-    }
-}
 #END
 
 
@@ -517,51 +384,19 @@ $FilteredBam = $Bam | Where-Object {
 if ($FilteredBam) {
     foreach($i in $FilteredBam) {
         if($i.Signature.Contains("File Was Not Found")) {
-            $bamData += ("⚠️ | " + $i.Time + " | " + $i.Path + " ")
+            Write-Host ("⚠️ | " + $i.Time + " | " + $i.Path + " ")
         }
         if($i.Signature.Contains("Invalid Signature")) {
-            $bamData += ("❌ | " + $i.Time + " | " + $i.Path + " ")
+            Write-Host ("❌ | " + $i.Time + " | " + $i.Path + " ")
         }
     }
 }
-
-if ($bamData) { $embeds += @{ 
-        title = "Bam data" 
-        description = ($bamData -join "`n")
-        color = 16776960
-    }
-}
-
-
 #END
 
 
 
 $endTime = Get-Date
 $duration = $endTime - $startTime
-$comment = ""
-
-$hwidData = Invoke-RestMethod ("https://github.com/denisshiferfpidr/legit-check/raw/refs/heads/main/database")
-foreach($i in $hwidData -split "`n") {
-    if($i.Contains((Get-CimInstance -Class Win32_ComputerSystemProduct).UUID)) {
-        $comment = ($i -split ":::")[1]
-    }
-}
-
-$payload = @{
-content = 
-"
-# Дата: $data HWID: $((Get-CimInstance -Class Win32_ComputerSystemProduct).UUID) 
-# Длительность: $($duration.TotalMinutes.ToString("F2")) мин
-# Комментарий: $comment
-"
-}
-$payload.embeds = $embeds
-
-
-
-Send-Webhook-Data -Payload $payload
-
 
 
 $filePath = "$env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
@@ -570,22 +405,3 @@ wevtutil clear-log "Microsoft-Windows-PowerShell/Operational"
 
 
 Write-Host "Done! $($duration.TotalMinutes.ToString("F2")) min"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
