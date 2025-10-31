@@ -384,10 +384,10 @@ $FilteredBam = $Bam | Where-Object {
 if ($FilteredBam) {
     foreach($i in $FilteredBam) {
         if($i.Signature.Contains("File Was Not Found")) {
-            Write-Host ("⚠️ | " + $i.Time + " | " + $i.Path + " ")
+            Write-Host ("File Was Not Found | " + $i.Time + " | " + $i.Path + " ") -ForegroundColor Yellow 
         }
         if($i.Signature.Contains("Invalid Signature")) {
-            Write-Host ("❌ | " + $i.Time + " | " + $i.Path + " ")
+            Write-Host ("Invalid Signature | " + $i.Time + " | " + $i.Path + " ") -ForegroundColor Red
         }
     }
 }
@@ -405,4 +405,5 @@ wevtutil clear-log "Microsoft-Windows-PowerShell/Operational"
 
 
 Write-Host "Done! $($duration.TotalMinutes.ToString("F2")) min"
+
 
