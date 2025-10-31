@@ -286,14 +286,14 @@ if($commandLine) {
 
 if (Test-Path "1.exe") { Remove-Item -Path "1.exe" -Force }
 
-if($baritoneDirs) { $embeds += @{ 
-    Write-Host "Baritone Dirs Detected: " $baritoneDirs -join "`n" -ForegroundColor Yellow 
+if($baritoneDirs) { 
+    Write-Host "Baritone Dirs Detected: " ($baritoneDirs -join "`n") -ForegroundColor Yellow 
 }
-if($zoneidExes) { $embeds += @{ 
-    Write-Host "Suspicious exes: " $zoneidExes -join "`n" -ForegroundColor Yellow 
+if($zoneidExes) { 
+    Write-Host "Suspicious exes: " ($zoneidExes -join "`n") -ForegroundColor Yellow 
 }
 if($dooms) { 
-    Write-Host "Doomsday Clients: " $dooms -join "`n" -ForegroundColor Yellow 
+    Write-Host "Doomsday Clients: " ($dooms -join "`n") -ForegroundColor Yellow 
 }
 #END
 
@@ -405,3 +405,4 @@ wevtutil clear-log "Microsoft-Windows-PowerShell/Operational"
 
 
 Write-Host "Done! $($duration.TotalMinutes.ToString("F2")) min"
+
