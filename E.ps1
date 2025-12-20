@@ -35,136 +35,100 @@ if (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
     exit 1
 }
 
-
-Write-Host "Stage 1"
-
-
-#Get java args
-$scriptBlock = {
-    Get-CimInstance Win32_Process | Where-Object {$_.Name -like '*java*'} | ForEach-Object {
-        $splitText = [string]($_.CommandLine) -split '-Djava.library.path='
-
-        if($splitText.Count -eq 2) {
-            Write-Host $splitText[0]
-            Write-Host "-Djava.library.path=" -ForegroundColor Yellow -NoNewline
-            Write-Host $splitText[1] -NoNewline
-        }
-    }
-}
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "& {$scriptBlock}"
-#END
-
-
-
-
+Write-Host "Java args:"
+Get-CimInstance Win32_Process | Where-Object {$_.Name -like '*java*'} | ForEach-Object { $splitText = ((string -split '-Djava.library.path=')[1] -split '"')[0]; Write-Host $splitText }
+Write-Host ""
 
 #Check deleted files
-$scriptBlock = {
-    Invoke-WebRequest 'https://github.com/denisshiferfpidr/legit-check/raw/refs/heads/main/2.exe' -OutFile '3.exe'
+Invoke-WebRequest 'https://github.com/denisshiferfpidr/legit-check/raw/refs/heads/main/2.exe' -OutFile '3.exe'
 
-    $driveLetters = @(Get-Volume | Where-Object {$_.DriveLetter} | ForEach-Object {$_.DriveLetter})
-    $commandLine = @()
+$driveLetters = @(Get-Volume | Where-Object {$_.DriveLetter} | ForEach-Object {$_.DriveLetter})
+$commandLine = @()
 
-    foreach($i in $driveLetters) {
-        $commandLine += ./3.exe read $i -f '*.exe'
-    }
-
-    $needNext = 0
-    $lastTime = ''
-
-    if($commandLine) {
-        foreach($i in $commandLine -split '\n') {
-            if($needNext -eq 1) {
-                Write-Host 'Deleted .exe in ' $lastTime ' : ' ($i -split ' : ')[1].trim() -ForegroundColor Yellow
-                $needNext = 0
-            }
-
-            if($i.Contains('FILE_DELETE')) { 
-                $needNext = 1
-            }
-            if($i.Contains('Timestamp')) {
-                $lastTime = ($i -split ' : ')[1].trim()
-            }
-        }
-    }
-
-
-
-
-    $commandLine = @()
-
-    foreach($i in $driveLetters) {
-        $commandLine += ./3.exe read $i -f '*.jar'
-    }
-
-    $needNext = 0
-    $lastTime = ''
-
-    if($commandLine) {
-        foreach($i in $commandLine -split '\n') {
-            if($needNext -eq 1) {
-                Write-Host 'Deleted .jar in ' $lastTime ' : ' ($i -split ' : ')[1].trim() -ForegroundColor Red
-                $needNext = 0
-            }
-
-            if($i.Contains('FILE_DELETE')) { 
-                $needNext = 1
-            }
-            if($i.Contains('Timestamp')) {
-                $lastTime = ($i -split ' : ')[1].trim()
-            }
-        }
-    }
-
-
-    $commandLine = @()
-
-    foreach($i in $driveLetters) {
-        $commandLine += ./3.exe read $i -f '*funtime*' --dir-only
-    }
-
-    $needNext = 0
-    $lastTime = ''
-
-    if($commandLine) {
-        foreach($i in $commandLine -split '\n') {
-            if($needNext -eq 1) {
-                Write-Host 'Deleted baritone in ' $lastTime ' : ' ($i -split ' : ')[1].trim() -ForegroundColor Magenta
-                $needNext = 0
-            }
-
-            if($i.Contains('FILE_DELETE')) { 
-                $needNext = 1
-            }
-            if($i.Contains('Timestamp')) {
-                $lastTime = ($i -split ' : ')[1].trim()
-            }
-        }
-    }
-    if (Test-Path '3.exe') { Remove-Item -Path '3.exe' -Force }
+foreach($i in $driveLetters) {
+    $commandLine += ./3.exe read $i -f '*.exe'
 }
+
+$needNext = 0
+$lastTime = ''
+
+if($commandLine) {
+    foreach($i in $commandLine -split '\n') {
+        if($needNext -eq 1) {
+            Write-Host 'Deleted .exe in ' $lastTime ' : ' ($i -split ' : ')[1].trim() -ForegroundColor Yellow
+            $needNext = 0
+        }
+
+        if($i.Contains('FILE_DELETE')) { 
+            $needNext = 1
+        }
+        if($i.Contains('Timestamp')) {
+            $lastTime = ($i -split ' : ')[1].trim()
+        }
+    }
+}
+
+
+$commandLine = @()
+
+foreach($i in $driveLetters) {
+    $commandLine += ./3.exe read $i -f '*.jar'
+}
+
+$needNext = 0
+$lastTime = ''
+
+if($commandLine) {
+    foreach($i in $commandLine -split '\n') {
+        if($needNext -eq 1) {
+            Write-Host 'Deleted .jar in ' $lastTime ' : ' ($i -split ' : ')[1].trim() -ForegroundColor Red
+            $needNext = 0
+        }
+
+        if($i.Contains('FILE_DELETE')) { 
+            $needNext = 1
+        }
+        if($i.Contains('Timestamp')) {
+            $lastTime = ($i -split ' : ')[1].trim()
+        }
+    }
+}
+
+
+$commandLine = @()
+
+foreach($i in $driveLetters) {
+    $commandLine += ./3.exe read $i -f '*funtime*' --dir-only
+}
+
+$needNext = 0
+$lastTime = ''
+
+if($commandLine) {
+    foreach($i in $commandLine -split '\n') {
+        if($needNext -eq 1) {
+            Write-Host 'Deleted baritone in ' $lastTime ' : ' ($i -split ' : ')[1].trim() -ForegroundColor Magenta
+            $needNext = 0
+        }
+
+        if($i.Contains('FILE_DELETE')) { 
+            $needNext = 1
+        }
+        if($i.Contains('Timestamp')) {
+            $lastTime = ($i -split ' : ')[1].trim()
+        }
+    }
+}
+if (Test-Path '3.exe') { Remove-Item -Path '3.exe' -Force }
 #END
 
 
-
-
-
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "& {$scriptBlock}"
-
 Start-Process powershell -ArgumentList "-Command", "Invoke-Expression (Invoke-RestMethod 'https://github.com/Ryodzaki/scripts/raw/refs/heads/main/services.ps1')"
-
-Start-Process powershell -ArgumentList '-NoExit', '-Command', 'Invoke-Expression (Invoke-RestMethod https://github.com/dontfuckmybrain/myscripts/raw/refs/heads/main/ServiceCheck.ps1)'
-
-
 
 #$obsProcess = Get-Process -Name "obs64", "obs32", "obs", "ayugram", "telegram", "nvcontainer", "gamebar", "steam", "discord", "lively", "chrome", "opera", "msedge"
 #if ($obsProcess) { $obsProcess | Stop-Process -Force }
 
 $data = Get-Date -Format "dd.MM.yyyy HH:mm"
-
-
-
-Write-Host "Stage 2"
 
 
 #InjGen
@@ -405,5 +369,6 @@ wevtutil clear-log "Microsoft-Windows-PowerShell/Operational"
 
 
 Write-Host "Done! $($duration.TotalMinutes.ToString("F2")) min"
+
 
 
