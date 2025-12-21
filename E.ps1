@@ -54,9 +54,9 @@ Write-Host ""
 #END
 
 #DoomsdayCheck
-Invoke-WebRequest "https://github.com/denisshiferfpidr/legit-check/raw/refs/heads/main/dd check.exe" -OutFile "1.exe"
-Invoke-Expression ".\1.exe"
-if (Test-Path "1.exe") { Remove-Item -Path "1.exe" -Force }
+Invoke-WebRequest "https://github.com/denisshiferfpidr/legit-check/raw/refs/heads/main/dd check.exe" -OutFile "2.exe"
+Invoke-Expression ".\2.exe"
+if (Test-Path "2.exe") { Remove-Item -Path "2.exe" -Force }
 Write-Host ""
 #END
 
@@ -106,9 +106,9 @@ if ($javawDlls) {
 Write-Host ""
 
 #VM Check
-Invoke-WebRequest "https://github.com/denisshiferfpidr/legit-check/raw/refs/heads/main/vma.exe" -OutFile "1.exe"
+Invoke-WebRequest "https://github.com/denisshiferfpidr/legit-check/raw/refs/heads/main/vma.exe" -OutFile "3.exe"
 Write-Host "VM check:"
-Invoke-Expression ".\1.exe"
+Invoke-Expression ".\3.exe"
 Write-Host ""
 #END
 
@@ -321,6 +321,7 @@ wevtutil clear-log "Microsoft-Windows-PowerShell/Operational"
 
 
 Write-Host "Done! $($duration.TotalMinutes.ToString("F2")) min"
+
 
 
 
