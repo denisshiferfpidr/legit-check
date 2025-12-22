@@ -35,8 +35,8 @@ if (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
     exit 1
 }
 
-$obsProcess = Get-Process -Name "obs64", "obs32", "obs", "ayugram", "telegram", "nvcontainer", "gamebar", "steam", "discord", "lively", "chrome", "opera", "msedge"
-if ($obsProcess) { $obsProcess | Stop-Process -Force -ErrorAction SilentlyContinue }
+$obsProcess = Get-Process -Name "obs64", "obs32", "obs", "ayugram", "telegram", "nvcontainer", "gamebar", "steam", "discord", "lively", "chrome", "opera", "msedge" -ErrorAction SilentlyContinue
+if ($obsProcess) { $obsProcess | Stop-Process -Force }
 
 
 $data = Get-Date -Format "dd.MM.yyyy HH:mm"
@@ -329,6 +329,7 @@ wevtutil clear-log "Microsoft-Windows-PowerShell/Operational"
 
 
 Write-Host "Done! $($duration.TotalMinutes.ToString("F2")) min"
+
 
 
 
